@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescue Pilot - Emergency Response Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="plane-bg"></div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+        <div class="welcome-container">
+            <div class="logo-container">
+                <div class="plane-icon">✈️</div>
+                <h1 class="game-title">RESCUE PILOT</h1>
+                <p class="game-subtitle">Emergency Response Unit</p>
+            </div>
+            
+            <div class="story-box">
+                <h2>📖 Your Mission</h2>
+                <p>Ready to be a super pilot? Fly across Europe to help people in emergencies - floods, fires, earthquakes, and more!</p>
+                <div class="stats-preview">
+                    <div class="stat-item">
+                        <span class="stat-icon">⛽</span>
+                        <span class="stat-label">Starting Fuel</span>
+                        <span class="stat-value">2,500 km</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">⭐</span>
+                        <span class="stat-label">Trust Points</span>
+                        <span class="stat-value">100</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-label">Missions</span>
+                        <span class="stat-value">6</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="name-input-container">
+                <label for="player-name">Enter Your Callsign, Pilot:</label>
+                <input type="text" id="player-name" placeholder="Commander..." maxlength="20">
+                <button id="start-btn" class="btn-primary">
+                    <span class="btn-icon">🚀</span>
+                    BEGIN MISSION
+                </button>
+            </div>
+
+            <div class="instructions">
+                <h3>⚠️ Remember:</h3>
+                <ul>
+                    <li>Complete all 6 rescue missions to win</li>
+                    <li>Trade Trust Points to refuel your plane</li>
+                    <li>Watch out for Surprise Events on the ground</li>
+                    <li>Fatal Events end your game immediately!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="game-screen" class="screen">
+        <header class="game-header">
+            <div class="header-left">
+                <div class="pilot-info">
+                    <span class="pilot-icon">👨‍✈️</span>
+                    <span id="pilot-name-display">Commander</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <h1 class="header-title">RESCUE PILOT</h1>
+            </div>
+            <div class="header-right">
+                <button id="help-btn" class="btn-icon-only" title="Help">❓</button>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <!-- Status Dashboard -->
+            <section class="dashboard">
+                <div class="status-cards">
+                    <!-- Fuel Card -->
+                    <div class="status-card fuel-card">
+                        <div class="card-header">
+                            <span class="card-icon">⛽</span>
+                            <span class="card-title">FUEL RANGE</span>
+                        </div>
+                        <div class="fuel-gauge">
+                            <div class="fuel-bar-container">
+                                <div id="fuel-bar" class="fuel-bar"></div>
+                            </div>
+                            <div class="fuel-value">
+                                <span id="fuel-value">2500</span>
+                                <span class="fuel-unit">km</span>
+                            </div>
+                        </div>
+                        <button id="refuel-btn" class="btn-refuel" style="display: none;">
+                            🔄 Refuel (-20 Trust = +1000km)
+                        </button>
+                    </div>
+
+                    <!-- Reputation Card -->
+                    <div class="status-card reputation-card">
+                        <div class="card-header">
+                            <span class="card-icon">⭐</span>
+                            <span class="card-title">TRUST POINTS</span>
+                        </div>
+                        <div class="reputation-display">
+                            <span id="reputation-value" class="big-number">100</span>
+                        </div>
+                        <div class="reputation-bar-container">
+                            <div id="reputation-bar" class="reputation-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Rescued Card -->
+                    <div class="status-card rescued-card">
+                        <div class="card-header">
+                            <span class="card-icon">🧑‍🤝‍🧑</span>
+                            <span class="card-title">PEOPLE RESCUED</span>
+                        </div>
+                        <div class="rescued-display">
+                            <span id="rescued-value" class="big-number">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Missions Card -->
+                    <div class="status-card missions-card">
+                        <div class="card-header">
+                            <span class="card-icon">🎯</span>
+                            <span class="card-title">MISSIONS</span>
+                        </div>
+                        <div class="missions-display">
+                            <span id="missions-completed">0</span>
+                            <span class="missions-separator">/</span>
+                            <span id="missions-total">6</span>
+                        </div>
+                        <div class="missions-label">Completed</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Location -->
+            <section class="location-section">
+                <div class="location-card">
+                    <div class="location-header">
+                        <span class="location-icon">📍</span>
+                        <span class="location-label">CURRENT LOCATION</span>
+                    </div>
+                    <div class="location-info">
+                        <h2 id="current-airport-name">London Heathrow Airport</h2>
+                        <span id="current-airport-code" class="airport-code">EGLL</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Travel Planner -->
+            <section class="travel-section">
+                <div class="travel-header">
+                    <h2>✈️ Travel Planner</h2>
+                    <p>Select your destination from airports within your fuel range</p>
+                </div>
+                <div id="airports-grid" class="airports-grid">
+                    <!-- Airports will be populated by JS -->
+                </div>
+            </section>
+
+            <!-- Active Missions Panel -->
+            <section class="missions-section">
+                <div class="missions-header">
+                    <h2>📋 Active Missions</h2>
+                </div>
+                <div id="missions-list" class="missions-list">
+                    <!-- Missions will be populated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Mission Alert Modal -->
+    <div id="mission-modal" class="modal">
+        <div class="modal-content mission-alert">
+            <div class="modal-header danger">
+                <span class="modal-icon">🚨</span>
+                <h2>MISSION ALERT</h2>
+            </div>
+            <div class="modal-body">
+                <div class="disaster-info">
+                    <span id="disaster-icon" class="disaster-icon">🌊</span>
+                    <h3 id="disaster-type">FLOOD</h3>
+                </div>
+                <div class="mission-details">
+                    <div class="detail-row">
+                        <span class="detail-label">People Trapped:</span>
+                        <span id="people-trapped" class="detail-value">5</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Severity Level:</span>
+                        <span id="severity-level" class="detail-value">3/10</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Reward:</span>
+                        <span id="mission-reward" class="detail-value reward">+15 Trust</span>
+                    </div>
+                </div>
+                <p class="mission-question">Attempt rescue mission?</p>
+            </div>
+            <div class="modal-actions">
+                <button id="accept-mission" class="btn-success">✅ RESCUE</button>
+                <button id="decline-mission" class="btn-danger">❌ SKIP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content result-content">
+            <div id="result-header" class="modal-header">
+                <span id="result-icon" class="modal-icon">✅</span>
+                <h2 id="result-title">MISSION SUCCESS</h2>
+            </div>
+            <div class="modal-body">
+                <p id="result-message">You successfully rescued 5 people!</p>
+                <div id="result-effects" class="result-effects">
+                    <!-- Effects will be populated by JS -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="result-continue" class="btn-primary">CONTINUE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="event-modal" class="modal">
+        <div class="modal-content event-content">
+            <div id="event-header" class="modal-header">
+                <span id="event-icon" class="modal-icon">⚡</span>
+                <h2>GROUND EVENT</h2>
+            </div>
+            <div class="modal-body">
+                <h3 id="event-name">Event Name</h3>
+                <p id="event-description">Event description goes here...</p>
+                <div id="event-effects" class="event-effects">
+                    <!-- Effects will be populated by JS -->
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="event-continue" class="btn-primary">ACKNOWLEDGE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal">
+        <div class="modal-content gameover-content">
+            <div id="gameover-header" class="modal-header">
+                <span id="gameover-icon" class="modal-icon">💥</span>
+                <h2 id="gameover-title">GAME OVER</h2>
+            </div>
+            <div class="modal-body">
+                <p id="gameover-reason">Your plane ran out of fuel!</p>
+                <div class="final-stats">
+                    <h3>Final Statistics</h3>
+                    <div class="stat-row">
+                        <span>Pilot:</span>
+                        <span id="final-pilot">Commander</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>People Rescued:</span>
+                        <span id="final-rescued">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Trust Points:</span>
+                        <span id="final-reputation">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Missions Completed:</span>
+                        <span id="final-missions">0/6</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="restart-btn" class="btn-primary">🔄 PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victory-modal" class="modal">
+        <div class="modal-content victory-content">
+            <div class="victory-animation">
+                <div class="confetti"></div>
+                <span class="trophy">🏆</span>
+            </div>
+            <h2>MISSION COMPLETE!</h2>
+            <p class="victory-subtitle">You are the Ultimate Rescue Pilot!</p>
+            <div class="final-stats">
+                <div class="stat-row">
+                    <span>Pilot:</span>
+                    <span id="victory-pilot">Commander</span>
+                </div>
+                <div class="stat-row">
+                    <span>People Rescued:</span>
+                    <span id="victory-rescued">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Final Trust Points:</span>
+                    <span id="victory-reputation">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Fuel Remaining:</span>
+                    <span id="victory-fuel">0 km</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="victory-restart" class="btn-primary">🔄 PLAY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flying Animation Overlay -->
+    <div id="flying-overlay" class="flying-overlay">
+        <div class="flying-content">
+            <div class="flying-plane">✈️</div>
+            <h2>Flying to destination...</h2>
+            <div class="flying-progress">
+                <div class="flying-bar"></div>
+            </div>
+            <p id="flying-info">0 km remaining</p>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content help-content">
+            <div class="modal-header info">
+                <span class="modal-icon">📖</span>
+                <h2>HOW TO PLAY</h2>
+            </div>
+            <div class="modal-body help-body">
+                <div class="help-section">
+                    <h3>🎯 Objective</h3>
+                    <p>Complete all 6 rescue missions across Europe to become the ultimate Rescue Pilot!</p>
+                </div>
+                <div class="help-section">
+                    <h3>⛽ Fuel</h3>
+                    <p>Your plane has limited fuel (2,500 km). Each flight uses fuel equal to the distance traveled. If you run out of fuel mid-flight, you crash!</p>
+                </div>
+                <div class="help-section">
+                    <h3>⭐ Trust Points</h3>
+                    <p>Start with 100 Trust Points. Earn more by completing missions. Spend 20 Trust Points to refuel (+1,000 km).</p>
+                </div>
+                <div class="help-section">
+                    <h3>🚨 Missions</h3>
+                    <p>When you land at an airport with a mission, you can attempt a rescue. Success depends on the disaster's severity level.</p>
+                </div>
+                <div class="help-section">
+                    <h3>⚡ Events</h3>
+                    <p>Random ground events can help or hurt you. Watch out for Fatal Events - they end your game immediately!</p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="help-close" class="btn-primary">GOT IT!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
