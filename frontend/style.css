@@ -1686,3 +1686,636 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* ============================================
+   DISPATCH OVERLAY (Add to your style.css)
+   ============================================ */
+
+.dispatch-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 23, 0.98);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+}
+
+.dispatch-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.dispatch-content {
+    text-align: center;
+    max-width: 500px;
+    padding: var(--spacing-2xl);
+}
+
+.dispatch-icon {
+    font-size: 5rem;
+    animation: pulse-emergency 0.5s ease-in-out infinite;
+    display: block;
+    margin-bottom: var(--spacing-lg);
+}
+
+@keyframes pulse-emergency {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.8));
+    }
+    50% { 
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 40px rgba(255, 51, 102, 1));
+    }
+}
+
+.dispatch-content h2 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--accent-red);
+    letter-spacing: 4px;
+    margin-bottom: var(--spacing-xl);
+    text-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+    animation: blink-text 1s ease-in-out infinite;
+}
+
+@keyframes blink-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.dispatch-mission-info {
+    background: rgba(255, 107, 53, 0.1);
+    border: 2px solid var(--accent-orange);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.dispatch-disaster-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: var(--spacing-md);
+}
+
+.dispatch-mission-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--accent-orange);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 2px;
+}
+
+.dispatch-mission-info p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.dispatch-location {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+}
+
+.dispatch-location span:first-child {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--accent-blue);
+}
+
+.dispatch-distance {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--accent-yellow);
+    font-weight: 700;
+}
+
+.dispatch-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.dispatch-status span {
+    font-family: var(--font-display);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.dispatch-status::before,
+.dispatch-status::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    animation: blink-dot 0.8s ease-in-out infinite;
+}
+
+@keyframes blink-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Loading Spinner */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 23, 0.9);
+    z-index: 4000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(0, 212, 255, 0.2);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+}
+/* ============================================
+   MAP SECTION STYLES
+   ============================================ */
+
+.map-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.map-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.map-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.map-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.legend-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.game-map {
+    width: 100%;
+    height: 450px;
+    border-radius: var(--border-radius-lg);
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    overflow: hidden;
+    background: var(--primary-medium);
+}
+
+.map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-md);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.legend-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.legend-marker.current {
+    background: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.legend-marker.mission {
+    background: #ff6b35;
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.legend-marker.in-range {
+    background: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.legend-marker.out-range {
+    background: #64748b;
+}
+
+/* Custom Map Markers */
+.custom-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.marker-current {
+    background: #22c55e;
+    width: 40px !important;
+    height: 40px !important;
+    border: 3px solid white;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    animation: pulse-marker 2s ease-in-out infinite;
+    font-size: 20px;
+}
+
+.marker-mission {
+    background: linear-gradient(135deg, #ff6b35, #ff3366);
+    width: 32px !important;
+    height: 32px !important;
+    border: 2px solid white;
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.8);
+    animation: pulse-mission 1.5s ease-in-out infinite;
+}
+
+.marker-in-range {
+    background: linear-gradient(135deg, #00d4ff, #0099cc);
+    width: 28px !important;
+    height: 28px !important;
+    border: 2px solid white;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+}
+
+.marker-out-range {
+    background: #475569;
+    width: 24px !important;
+    height: 24px !important;
+    border: 2px solid #64748b;
+    opacity: 0.6;
+}
+
+@keyframes pulse-marker {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(34, 197, 94, 1);
+    }
+}
+
+@keyframes pulse-mission {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(255, 107, 53, 0.8);
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 25px rgba(255, 107, 53, 1);
+    }
+}
+
+/* Leaflet Popup Customization */
+.leaflet-popup-content-wrapper {
+    background: var(--primary-medium);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+}
+
+.leaflet-popup-content {
+    margin: 12px 16px;
+    font-family: var(--font-body);
+}
+
+.leaflet-popup-tip {
+    background: var(--primary-medium);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.popup-content {
+    text-align: center;
+    min-width: 180px;
+}
+
+.popup-content h4 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--accent-blue);
+    margin-bottom: 8px;
+}
+
+.popup-content .popup-code {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--primary-dark);
+    background: var(--accent-blue);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.popup-content .popup-distance {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.popup-content .popup-mission {
+    background: rgba(255, 107, 53, 0.2);
+    color: var(--accent-orange);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.popup-content .popup-status {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.popup-content .popup-status.in-range {
+    background: rgba(0, 212, 255, 0.2);
+    color: var(--accent-blue);
+}
+
+.popup-content .popup-status.out-range {
+    background: rgba(100, 116, 139, 0.2);
+    color: var(--text-muted);
+}
+
+.popup-content .btn-fly {
+    width: 100%;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--accent-blue), #00a8cc);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.popup-content .btn-fly:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
+.popup-content .btn-fly:disabled {
+    background: #475569;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.popup-current {
+    text-align: center;
+}
+
+.popup-current h4 {
+    color: var(--accent-green);
+}
+
+.popup-current .popup-you-are-here {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--accent-green);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Fuel Range Circle */
+.fuel-range-circle {
+    fill: rgba(0, 212, 255, 0.1);
+    stroke: rgba(0, 212, 255, 0.5);
+    stroke-width: 2;
+    stroke-dasharray: 10, 5;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 23, 0.9);
+    z-index: 4000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(0, 212, 255, 0.2);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+}
+
+/* Responsive Map */
+@media (max-width: 768px) {
+    .game-map {
+        height: 350px;
+    }
+    
+    .map-legend {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-map {
+        height: 300px;
+    }
+}
+
+/* ============================================
+   MISSION LIST IMPROVEMENTS
+   ============================================ */
+
+.missions-progress {
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-text {
+    text-align: center;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-secondary);
+}
+
+.progress-text strong {
+    color: var(--accent-blue);
+}
+
+.progress-count {
+    color: var(--accent-green);
+    font-weight: 600;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Difficulty Badges */
+.difficulty-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.difficulty-badge.easy {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--accent-green);
+}
+
+.difficulty-badge.medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--accent-yellow);
+}
+
+.difficulty-badge.hard {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--accent-red);
+}
+
+/* Mission Reward in list */
+.mission-reward {
+    font-size: 0.8rem;
+    color: var(--accent-green);
+    margin-top: 4px;
+}
+
+/* Mission difficulty in airport cards */
+.mission-difficulty {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Popup mission details */
+.popup-mission-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+
+/* Far mission marker (out of range but has mission) */
+.marker-mission-far {
+    opacity: 0.6;
+}
+
+/* Mission item improvements */
+.mission-item.completed .mission-icon {
+    filter: grayscale(0);
+}
+
+.mission-item.failed .mission-icon {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.mission-item.pending {
+    border-left: 3px solid var(--accent-orange);
+}
+
+.mission-item.completed {
+    border-left: 3px solid var(--accent-green);
+}
+
+.mission-item.failed {
+    border-left: 3px solid var(--accent-red);
+    opacity: 0.7;
+}
