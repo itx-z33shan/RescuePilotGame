@@ -1,73 +1,75 @@
--- Rescue Pilot Game Database Schema
--- Run this after you have the flight_game database with airport table
+-- RESCUE PILOT GAME SCHEMA
 
-USE flight_game;
+SET FOREIGN_KEY_CHECKS = 0;
 
--- Player table
 DROP TABLE IF EXISTS player_mission;
 DROP TABLE IF EXISTS mission;
-DROP TABLE IF EXISTS player;
 DROP TABLE IF EXISTS event;
+DROP TABLE IF EXISTS player;
 
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Player table
 CREATE TABLE player (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    fuel INT NOT NULL DEFAULT 2500,
+    fuel INT DEFAULT 2500,
     rescued_people INT DEFAULT 0,
     reputation INT DEFAULT 100,
-    current_airport VARCHAR(10) NOT NULL,
-    crashed INT DEFAULT 0,
+    current_airport VARCHAR(10),
+    crashed TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Mission table
+-- Mission table (with icon!)
 CREATE TABLE mission (
     id INT AUTO_INCREMENT PRIMARY KEY,
     airport VARCHAR(10) NOT NULL,
     disaster_type VARCHAR(50) NOT NULL,
-    icon VARCHAR(10) NOT NULL,
+    icon VARCHAR(10) DEFAULT '🌍',
     severity_level INT NOT NULL,
     people_in_danger INT NOT NULL,
     reward_reputation INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Player-Mission relationship table
+-- Player-Mission junction
 CREATE TABLE player_mission (
     id INT AUTO_INCREMENT PRIMARY KEY,
     player_id INT NOT NULL,
     mission_id INT NOT NULL,
     status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
     rescued_people INT DEFAULT 0,
-    UNIQUE KEY unique_assignment (player_id, mission_id),
+    completed_at TIMESTAMP NULL,
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
     FOREIGN KEY (mission_id) REFERENCES mission(id) ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Event table
 CREATE TABLE event (
     id INT AUTO_INCREMENT PRIMARY KEY,
     event_name VARCHAR(100) NOT NULL,
-    description VARCHAR(255),
-    probability INT NOT NULL,
+    description TEXT,
+    probability FLOAT DEFAULT 0.1,
     fuel_effect INT DEFAULT 0,
     rescued_effect INT DEFAULT 0,
     reputation_effect INT DEFAULT 0,
-    fatal INT DEFAULT 0,
-    icon VARCHAR(20) NOT NULL,
-    event_type VARCHAR(20) NOT NULL
-);
+    fatal TINYINT(1) DEFAULT 0,
+    icon VARCHAR(10) DEFAULT '⚡',
+    event_type ENUM('positive', 'negative', 'neutral') DEFAULT 'neutral'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insert events
-INSERT INTO event 
-(event_name, description, probability, fuel_effect, rescued_effect, reputation_effect, fatal, icon, event_type) 
-VALUES
-('Fuel Leaked', 'Sabotage or mechanical failure caused a massive leak while you were grounded. Significant fuel loss!', 4, -400, 0, 0, 0, '⛽', 'warning'),
-('Terrorist Attack', 'A secondary terrorist attack hits the runway. Your immediate response is scrutinized, causing reputation loss.', 3, -50, 0, -50, 0, '💣', 'danger'),
-('Bomb Threat', 'Authorities ground all flights due to a bomb threat. You lose time finding an alternate runway, costing fuel.', 2, -200, 0, -10, 0, '🚨', 'warning'),
-('Plane Damage', 'Critical structural damage is discovered on your plane. Continuing is impossible.', 1, 0, 0, -50, 1, '✈️💔', 'danger'),
-('Emergency Fuel Drop', 'A nearby military base provides emergency fuel supplies!', 2, 500, 0, 0, 0, '🛢️', 'good'),
-('Media Coverage', 'Your heroic efforts were featured on the news! Public trust in your mission increases.', 2, 0, 0, 25, 0, '📺', 'good'),
-('Volunteer Support', 'Local volunteers helped rescue additional people while you were landing!', 2, 0, 2, 10, 0, '🤝', 'good'),
-('Nothing Happens', 'The airport is secure. All clear!', 5, 0, 0, 0, 0, '✅', 'good');
-
+-- Default events
+INSERT INTO event VALUES
+(1, 'Tailwind Boost', 'Favorable winds saved fuel!', 0.12, 200, 0, 5, 0, '🍃', 'positive'),
+(2, 'Mechanical Issue', 'Minor repairs needed.', 0.08, -150, 0, -10, 0, '🔧', 'negative'),
+(3, 'Media Coverage', 'News covered your efforts!', 0.07, 0, 0, 15, 0, '📰', 'positive'),
+(4, 'Fuel Leak', 'Small leak detected.', 0.05, -300, 0, -15, 0, '💧', 'negative'),
+(5, 'Smooth Landing', 'Nothing eventful.', 0.35, 0, 0, 0, 0, '✈️', 'neutral'),
+(6, 'Grateful Survivor', 'Word of heroism spread!', 0.06, 0, 0, 20, 0, '🙏', 'positive'),
+(7, 'Turbulence', 'Severe turbulence hit.', 0.08, -200, 0, -5, 0, '🌪️', 'negative'),
+(8, 'Celebrity Tweet', 'Celebrity endorsed you!', 0.04, 0, 0, 25, 0, '⭐', 'positive'),
+(9, 'Engine Failure', 'CRITICAL FAILURE!', 0.02, 0, 0, -50, 1, '💥', 'negative'),
+(10, 'Found Stowaway', 'Survivor in cargo!', 0.04, -50, 1, 10, 0, '👤', 'positive'),
+(11, 'Weather Delay', 'Bad weather delay.', 0.06, -100, 0, 0, 0, '🌧️', 'negative'),
+(12, 'Efficient Route', 'Shortcut found!', 0.03, 150, 0, 5, 0, '🗺️', 'positive');
