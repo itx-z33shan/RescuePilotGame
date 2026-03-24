@@ -1,15 +1,15 @@
--- RESCUE PILOT GAME SCHEMA
-
-SET FOREIGN_KEY_CHECKS = 0;
+-- ============================================
+-- RESCUE PILOT GAME SCHEMA (TiDB-safe)
+-- ============================================
 
 DROP TABLE IF EXISTS player_mission;
 DROP TABLE IF EXISTS mission;
 DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS player;
 
-SET FOREIGN_KEY_CHECKS = 1;
-
--- Player table
+-- ============================================
+-- PLAYER TABLE
+-- ============================================
 CREATE TABLE player (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -17,11 +17,13 @@ CREATE TABLE player (
     rescued_people INT DEFAULT 0,
     reputation INT DEFAULT 100,
     current_airport VARCHAR(10),
-    crashed TINYINT(1) DEFAULT 0,
+    crashed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
--- Mission table (with icon!)
+-- ============================================
+-- MISSION TABLE
+-- ============================================
 CREATE TABLE mission (
     id INT AUTO_INCREMENT PRIMARY KEY,
     airport VARCHAR(10) NOT NULL,
@@ -31,21 +33,25 @@ CREATE TABLE mission (
     people_in_danger INT NOT NULL,
     reward_reputation INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
--- Player-Mission junction
+-- ============================================
+-- PLAYER_MISSION TABLE
+-- ============================================
 CREATE TABLE player_mission (
     id INT AUTO_INCREMENT PRIMARY KEY,
     player_id INT NOT NULL,
     mission_id INT NOT NULL,
-    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    status VARCHAR(20) DEFAULT 'pending',
     rescued_people INT DEFAULT 0,
     completed_at TIMESTAMP NULL,
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
     FOREIGN KEY (mission_id) REFERENCES mission(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
 
--- Event table
+-- ============================================
+-- EVENT TABLE
+-- ============================================
 CREATE TABLE event (
     id INT AUTO_INCREMENT PRIMARY KEY,
     event_name VARCHAR(100) NOT NULL,
@@ -54,22 +60,27 @@ CREATE TABLE event (
     fuel_effect INT DEFAULT 0,
     rescued_effect INT DEFAULT 0,
     reputation_effect INT DEFAULT 0,
-    fatal TINYINT(1) DEFAULT 0,
+    fatal BOOLEAN DEFAULT FALSE,
     icon VARCHAR(10) DEFAULT '⚡',
-    event_type ENUM('positive', 'negative', 'neutral') DEFAULT 'neutral'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    event_type VARCHAR(20) DEFAULT 'neutral'
+);
 
--- Default events
-INSERT INTO event VALUES
-(1, 'Tailwind Boost', 'Favorable winds saved fuel!', 0.12, 200, 0, 5, 0, '🍃', 'positive'),
-(2, 'Mechanical Issue', 'Minor repairs needed.', 0.08, -150, 0, -10, 0, '🔧', 'negative'),
-(3, 'Media Coverage', 'News covered your efforts!', 0.07, 0, 0, 15, 0, '📰', 'positive'),
-(4, 'Fuel Leak', 'Small leak detected.', 0.05, -300, 0, -15, 0, '💧', 'negative'),
-(5, 'Smooth Landing', 'Nothing eventful.', 0.35, 0, 0, 0, 0, '✈️', 'neutral'),
-(6, 'Grateful Survivor', 'Word of heroism spread!', 0.06, 0, 0, 20, 0, '🙏', 'positive'),
-(7, 'Turbulence', 'Severe turbulence hit.', 0.08, -200, 0, -5, 0, '🌪️', 'negative'),
-(8, 'Celebrity Tweet', 'Celebrity endorsed you!', 0.04, 0, 0, 25, 0, '⭐', 'positive'),
-(9, 'Engine Failure', 'CRITICAL FAILURE!', 0.02, 0, 0, -50, 1, '💥', 'negative'),
-(10, 'Found Stowaway', 'Survivor in cargo!', 0.04, -50, 1, 10, 0, '👤', 'positive'),
-(11, 'Weather Delay', 'Bad weather delay.', 0.06, -100, 0, 0, 0, '🌧️', 'negative'),
-(12, 'Efficient Route', 'Shortcut found!', 0.03, 150, 0, 5, 0, '🗺️', 'positive');
+-- ============================================
+-- INSERT EVENTS
+-- ============================================
+INSERT INTO event (
+    event_name, description, probability, fuel_effect,
+    rescued_effect, reputation_effect, fatal, icon, event_type
+) VALUES
+('Tailwind Boost', 'Favorable winds saved fuel during approach!', 0.12, 200, 0, 5, FALSE, '🍃', 'positive'),
+('Mechanical Issue', 'Minor repairs needed - used extra fuel.', 0.08, -150, 0, -10, FALSE, '🔧', 'negative'),
+('Media Coverage', 'Local news covered your heroic efforts!', 0.07, 0, 0, 15, FALSE, '📰', 'positive'),
+('Fuel Leak', 'Small fuel leak detected and fixed.', 0.05, -300, 0, -15, FALSE, '💧', 'negative'),
+('Smooth Landing', 'Perfect landing. Nothing eventful.', 0.35, 0, 0, 0, FALSE, '✈️', 'neutral'),
+('Grateful Survivor', 'A rescued person spread word of your heroism!', 0.06, 0, 0, 20, FALSE, '🙏', 'positive'),
+('Turbulence', 'Severe turbulence caused minor issues.', 0.08, -200, 0, -5, FALSE, '🌪️', 'negative'),
+('Celebrity Tweet', 'A celebrity tweeted about your service!', 0.04, 0, 0, 25, FALSE, '⭐', 'positive'),
+('Engine Failure', 'CRITICAL: Complete engine failure!', 0.02, 0, 0, -50, TRUE, '💥', 'negative'),
+('Found Stowaway', 'Discovered a survivor in cargo bay!', 0.04, -50, 1, 10, FALSE, '👤', 'positive'),
+('Weather Delay', 'Bad weather caused fuel consumption.', 0.06, -100, 0, 0, FALSE, '🌧️', 'negative'),
+('Efficient Route', 'Found a shortcut - saved fuel!', 0.03, 150, 0, 5, FALSE, '🗺️', 'positive');
