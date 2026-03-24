@@ -63,7 +63,12 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 # ============================================
 # AIRPORT ROUTES
 # ============================================
-
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "message": "Rescue Pilot backend is running",
+        "status": "ok"
+    })
 @app.route('/api/airports', methods=['GET'])
 def get_airports():
     """Get random European airports"""

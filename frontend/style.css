@@ -1,24 +1,40 @@
 /* ============================================
-   RESCUE PILOT - PRO STYLES v2.2
-   Updated:
-   - Welcome screen fits in one viewport without scroll
-   - Welcome screen can be fully hidden after Start Game
-   - Overall UI scaled down moderately
-   - Map section has more left/right breathing space
+   RESCUE PILOT - PRO STYLES v2.3 (FIXED)
+   ============================================
+   FIXES from v2.2:
+   ✓ Welcome screen fits 100 dvh without scroll
+   ✓ ID-based selectors added where JS requires them
+   ✓ Confetti container fixed to viewport
+   ✓ Flying overlay animation resets properly
+   ✓ Map section responsive breathing room
+   ✓ Mobile touch targets ≥ 44px
+   ✓ Toast container mobile-safe positioning
+   ✓ Font imports included
+   ✓ Leaflet popup z-index fixed
+   ✓ Landscape-phone layout fixed
+   ✓ Fuel-bar + refuel button reliability
+   ✓ Modal scroll on small screens
+   ✓ Airport card active state for mobile
+   ✓ Missing hover/focus states added
+   ✓ Progress ring SVG alignment
+   ✓ Removed body.welcome-active (JS never sets it)
    ============================================ */
 
+/* ---------- FONT IMPORTS ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Press+Start+2P&display=swap");
+
 /* ============================================
-   CSS CUSTOM PROPERTIES (VARIABLES)
+   CSS CUSTOM PROPERTIES
    ============================================ */
 
 :root {
-  /* Primary Colors */
+  /* Primary palette */
   --primary-dark: #0a0e17;
   --primary-medium: #131b2e;
   --primary-light: #1e2a45;
   --primary-lighter: #2a3a5a;
 
-  /* Accent Colors */
+  /* Accents */
   --accent-blue: #00d4ff;
   --accent-blue-dark: #00a8cc;
   --accent-orange: #ff6b35;
@@ -32,13 +48,13 @@
   --accent-purple-dark: #8b44cc;
   --accent-cyan: #00e5ff;
 
-  /* Neutral Colors */
+  /* Text */
   --text-primary: #ffffff;
   --text-secondary: #b0bec5;
   --text-muted: #78909c;
   --text-dark: #0a0e17;
 
-  /* Status Colors */
+  /* Status */
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.15);
   --warning: #f59e0b;
@@ -48,7 +64,7 @@
   --info: #3b82f6;
   --info-bg: rgba(59, 130, 246, 0.15);
 
-  /* Glass Effect */
+  /* Glass */
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -100,7 +116,7 @@
   --shadow-glow-red: 0 0 24px rgba(255, 51, 102, 0.35);
   --shadow-glow-purple: 0 0 24px rgba(168, 85, 247, 0.35);
 
-  /* Border Radius */
+  /* Radius */
   --radius-xs: 3px;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -118,12 +134,12 @@
   --space-2xl: 36px;
   --space-3xl: 48px;
 
-  /* Typography */
+  /* Fonts */
   --font-display: "Orbitron", "Segoe UI", sans-serif;
   --font-body: "Rajdhani", "Segoe UI", sans-serif;
   --font-pixel: "Press Start 2P", monospace;
 
-  /* Font Sizes */
+  /* Font Sizes — slightly scaled down */
   --text-xs: 0.68rem;
   --text-sm: 0.8rem;
   --text-base: 0.92rem;
@@ -134,7 +150,7 @@
   --text-4xl: 2.1rem;
   --text-5xl: 2.5rem;
 
-  /* Z-Index Scale */
+  /* Z-index */
   --z-base: 1;
   --z-dropdown: 100;
   --z-sticky: 200;
@@ -153,7 +169,7 @@
   --transition-slow: 500ms ease;
   --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  /* Safe Areas for Mobile */
+  /* Safe areas (notch / dynamic island) */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
@@ -161,7 +177,7 @@
 }
 
 /* ============================================
-   RESET & BASE STYLES
+   RESET & BASE
    ============================================ */
 
 *,
@@ -192,14 +208,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Welcome screen active body state */
-body.welcome-active {
-  overflow: hidden;
-  height: 100vh;
-  height: 100dvh;
-}
-
-/* Remove default button styles */
 button {
   font-family: inherit;
   font-size: inherit;
@@ -211,7 +219,6 @@ button {
   appearance: none;
 }
 
-/* Remove default input styles */
 input {
   font-family: inherit;
   font-size: inherit;
@@ -227,7 +234,6 @@ button:focus {
   outline: none;
 }
 
-/* Accessibility - Focus Visible */
 button:focus-visible,
 input:focus-visible,
 a:focus-visible {
@@ -236,45 +242,44 @@ a:focus-visible {
 }
 
 /* ============================================
-   PARTICLES BACKGROUND
+   SCROLLBAR
    ============================================ */
 
-.particle-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-lighter) transparent;
 }
 
-.particle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: rgba(0, 212, 255, 0.5);
-  border-radius: 50%;
-  animation: particle-float 10s infinite linear;
-  opacity: 0;
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-@keyframes particle-float {
-  0% {
-    opacity: 0;
-    transform: translateY(100vh) scale(0);
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-100vh) scale(1);
-  }
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--primary-lighter);
+  border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: var(--text-primary);
+}
+
+::-moz-selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: var(--text-primary);
 }
 
 /* ============================================
@@ -283,10 +288,7 @@ a:focus-visible {
 
 .animated-bg {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: -1;
   background: linear-gradient(
     180deg,
@@ -304,10 +306,7 @@ a:focus-visible {
 .stars2,
 .stars3 {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
 }
 
@@ -360,8 +359,7 @@ a:focus-visible {
       transparent
     );
   background-size: 250px 250px;
-  animation: twinkle 6s ease-in-out infinite;
-  animation-delay: -2s;
+  animation: twinkle 6s ease-in-out infinite -2s;
 }
 
 .stars3 {
@@ -369,8 +367,7 @@ a:focus-visible {
     radial-gradient(1px 1px at 30px 100px, rgba(0, 212, 255, 0.3), transparent),
     radial-gradient(1px 1px at 120px 60px, rgba(168, 85, 247, 0.3), transparent);
   background-size: 300px 300px;
-  animation: twinkle 8s ease-in-out infinite;
-  animation-delay: -4s;
+  animation: twinkle 8s ease-in-out infinite -4s;
 }
 
 @keyframes twinkle {
@@ -403,8 +400,7 @@ a:focus-visible {
   height: 100px;
   top: 45%;
   left: -125px;
-  animation: float-cloud 30s linear infinite;
-  animation-delay: -12s;
+  animation: float-cloud 30s linear infinite -12s;
 }
 
 .cloud-3 {
@@ -412,8 +408,7 @@ a:focus-visible {
   height: 150px;
   top: 75%;
   left: -200px;
-  animation: float-cloud 40s linear infinite;
-  animation-delay: -25s;
+  animation: float-cloud 40s linear infinite -25s;
 }
 
 @keyframes float-cloud {
@@ -448,16 +443,53 @@ a:focus-visible {
 }
 
 /* ============================================
+   PARTICLES
+   ============================================ */
+
+#particles,
+.particle-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(0, 212, 255, 0.5);
+  border-radius: 50%;
+  animation: particle-float 10s infinite linear;
+  opacity: 0;
+}
+
+@keyframes particle-float {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh) scale(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(1);
+  }
+}
+
+/* ============================================
    LOADING SCREEN
    ============================================ */
 
+#loading-screen,
 .loading-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  height: 100dvh;
+  inset: 0;
   background: var(--primary-dark);
   display: flex;
   align-items: center;
@@ -468,9 +500,11 @@ a:focus-visible {
     visibility 0.5s ease;
 }
 
+#loading-screen.fade-out,
 .loading-screen.fade-out {
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .loader-content {
@@ -554,10 +588,6 @@ a:focus-visible {
   animation: screen-fade-out 0.3s ease forwards;
 }
 
-#welcome-screen.hidden-after-start {
-  display: none !important;
-}
-
 @keyframes screen-fade-in {
   from {
     opacity: 0;
@@ -579,7 +609,7 @@ a:focus-visible {
 }
 
 /* ============================================
-   GLASS CARD EFFECT
+   GLASS EFFECTS
    ============================================ */
 
 .glass-card {
@@ -605,20 +635,23 @@ a:focus-visible {
 
 /* ============================================
    WELCOME SCREEN
+   — fits inside ONE viewport, no scroll
    ============================================ */
 
 #welcome-screen {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  padding: clamp(8px, 1.2vh, 14px);
-  padding-top: calc(clamp(8px, 1.2vh, 14px) + var(--safe-top));
-  padding-bottom: calc(clamp(8px, 1.2vh, 14px) + var(--safe-bottom));
-  min-height: 100vh;
-  min-height: 100dvh;
+  overflow: hidden;
   height: 100vh;
   height: 100dvh;
-  overflow: hidden;
+  padding: clamp(6px, 1vh, 14px) clamp(10px, 3vw, 20px);
+  padding-top: calc(clamp(6px, 1vh, 14px) + var(--safe-top));
+  padding-bottom: calc(clamp(6px, 1vh, 14px) + var(--safe-bottom));
+}
+
+#welcome-screen.active {
+  display: flex;
 }
 
 .welcome-container {
@@ -626,15 +659,18 @@ a:focus-visible {
   width: 100%;
   text-align: center;
   display: grid;
-  grid-template-rows: auto auto auto auto auto auto;
-  gap: clamp(8px, 1.5vh, 16px);
-  max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px);
+  grid-template-rows: auto auto auto auto auto auto auto;
+  gap: clamp(6px, 1.2vh, 14px);
+  /* FIX: clamp height so it can never overflow the viewport */
+  max-height: calc(
+    100dvh - var(--safe-top) - var(--safe-bottom) - clamp(12px, 2vh, 28px)
+  );
   overflow: hidden;
   align-content: center;
 }
 
+/* Logo */
 .logo-container {
-  margin-bottom: 0;
   position: relative;
 }
 
@@ -642,8 +678,8 @@ a:focus-visible {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(120px, 18vw, 180px);
-  height: clamp(120px, 18vw, 180px);
+  width: clamp(100px, 16vw, 160px);
+  height: clamp(100px, 16vw, 160px);
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle,
@@ -670,7 +706,7 @@ a:focus-visible {
 .plane-icon {
   position: relative;
   display: inline-block;
-  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
 }
 
 .plane-shadow {
@@ -694,13 +730,14 @@ a:focus-visible {
     transform: translateY(0) rotate(-3deg);
   }
   50% {
-    transform: translateY(-10px) rotate(3deg);
+    transform: translateY(-8px) rotate(3deg);
   }
 }
 
+/* Title */
 .game-title {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-size: clamp(1.5rem, 4.5vw, 2.8rem);
   font-weight: 900;
   letter-spacing: 2px;
   margin: 0;
@@ -738,7 +775,7 @@ a:focus-visible {
 
 .game-subtitle {
   font-family: var(--font-display);
-  font-size: clamp(0.65rem, 1.5vw, 0.95rem);
+  font-size: clamp(0.55rem, 1.3vw, 0.85rem);
   color: var(--text-secondary);
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -759,9 +796,9 @@ a:focus-visible {
   );
 }
 
+/* Story box */
 .story-box {
-  padding: clamp(10px, 1.8vh, 18px);
-  margin-bottom: 0;
+  padding: clamp(8px, 1.5vh, 16px);
   text-align: left;
 }
 
@@ -769,41 +806,42 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .story-icon {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .story-box h2 {
   font-family: var(--font-display);
-  font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+  font-size: clamp(0.78rem, 1.4vw, 1rem);
   color: var(--accent-yellow);
   letter-spacing: 1px;
 }
 
 .story-box p {
   color: var(--text-secondary);
-  font-size: clamp(0.78rem, 1.25vw, 0.96rem);
-  line-height: 1.45;
+  font-size: clamp(0.7rem, 1.1vw, 0.88rem);
+  line-height: 1.4;
 }
 
+/* Stats preview */
 .stats-preview {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(6px, 1vw, 12px);
-  margin-top: clamp(8px, 1vh, 14px);
+  gap: clamp(4px, 0.8vw, 10px);
+  margin-top: clamp(6px, 0.8vh, 10px);
 }
 
 .stat-item {
   background: rgba(0, 0, 0, 0.3);
-  padding: clamp(8px, 1.2vh, 14px);
+  padding: clamp(6px, 1vh, 12px);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   transition:
     transform var(--transition-normal),
     box-shadow var(--transition-normal);
@@ -816,15 +854,15 @@ a:focus-visible {
 
 .stat-icon-wrapper {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .stat-icon {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   position: relative;
   z-index: 2;
 }
@@ -849,24 +887,24 @@ a:focus-visible {
   }
 }
 
-.stat-label {
-  font-size: 0.62rem;
+.stat-item .stat-label {
+  font-size: 0.56rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
   text-align: center;
 }
 
-.stat-value {
+.stat-item .stat-value {
   font-family: var(--font-display);
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   color: var(--accent-blue);
   font-weight: 700;
 }
 
+/* Name input */
 .name-input-container {
-  padding: clamp(10px, 1.6vh, 18px);
-  margin-bottom: 0;
+  padding: clamp(8px, 1.4vh, 16px);
 }
 
 .name-input-container label {
@@ -875,9 +913,9 @@ a:focus-visible {
   justify-content: center;
   gap: var(--space-sm);
   font-family: var(--font-display);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   letter-spacing: 1px;
 }
 
@@ -888,14 +926,14 @@ a:focus-visible {
 .input-wrapper {
   position: relative;
   max-width: 320px;
-  margin: 0 auto 12px;
+  margin: 0 auto 10px;
 }
 
 #player-name {
   width: 100%;
-  padding: 11px 14px;
+  padding: 10px 14px;
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   background: rgba(0, 0, 0, 0.3);
   border: 2px solid rgba(0, 212, 255, 0.3);
@@ -925,22 +963,24 @@ a:focus-visible {
   background: var(--gradient-blue);
   transition: all var(--transition-normal);
   transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .input-wrapper.focused .input-border {
   width: 100%;
 }
 
+/* Primary button */
 .btn-primary {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
-  min-width: 185px;
-  padding: 12px 22px;
+  min-height: 44px;
+  min-width: 180px;
+  padding: 10px 20px;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-dark);
   background: var(--gradient-blue);
@@ -951,6 +991,8 @@ a:focus-visible {
   transition:
     transform var(--transition-normal),
     box-shadow var(--transition-normal);
+  /* FIX: ensure clickability above btn-bg */
+  z-index: 1;
 }
 
 .btn-primary:hover {
@@ -959,13 +1001,14 @@ a:focus-visible {
 }
 
 .btn-primary:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .btn-glow::before {
   content: "";
   position: absolute;
-  inset: 0 auto 0 -100%;
+  inset: 0;
+  left: -100%;
   width: 100%;
   background: linear-gradient(
     90deg,
@@ -974,6 +1017,7 @@ a:focus-visible {
     transparent
   );
   transition: left 0.5s ease;
+  z-index: 0;
 }
 
 .btn-glow:hover::before {
@@ -984,7 +1028,7 @@ a:focus-visible {
   position: absolute;
   inset: 0;
   background: var(--gradient-blue);
-  z-index: 0;
+  z-index: -1;
 }
 
 .btn-content {
@@ -996,20 +1040,21 @@ a:focus-visible {
 }
 
 .btn-icon {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
+/* Instructions */
 .instructions {
-  padding: clamp(10px, 1.8vh, 18px);
+  padding: clamp(8px, 1.4vh, 16px);
   text-align: left;
   border: 1px solid rgba(255, 107, 53, 0.2);
 }
 
 .instructions h3 {
   font-family: var(--font-display);
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   color: var(--accent-orange);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -1036,17 +1081,17 @@ a:focus-visible {
 .instructions li {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 3px 0;
+  gap: 6px;
+  padding: 2px 0;
   color: var(--text-secondary);
-  font-size: 0.74rem;
-  line-height: 1.35;
+  font-size: 0.7rem;
+  line-height: 1.3;
 }
 
 .bullet {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1054,13 +1099,12 @@ a:focus-visible {
   color: var(--accent-orange);
   border-radius: var(--radius-xs);
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
 }
 
 .version-info {
-  margin-top: 4px;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   letter-spacing: 1.5px;
 }
@@ -1099,6 +1143,7 @@ a:focus-visible {
   text-align: center;
 }
 
+/* Pilot info */
 .pilot-info {
   display: flex;
   align-items: center;
@@ -1115,6 +1160,7 @@ a:focus-visible {
   background: rgba(0, 212, 255, 0.1);
   border-radius: 50%;
   border: 2px solid rgba(0, 212, 255, 0.3);
+  flex-shrink: 0;
 }
 
 .pilot-icon {
@@ -1142,7 +1188,7 @@ a:focus-visible {
 }
 
 .pilot-rank {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   letter-spacing: 1px;
 }
@@ -1154,6 +1200,7 @@ a:focus-visible {
   font-weight: 600;
 }
 
+/* Header logo */
 .header-logo {
   display: flex;
   align-items: center;
@@ -1177,9 +1224,12 @@ a:focus-visible {
   letter-spacing: 1.5px;
 }
 
+/* Icon button */
 .btn-icon-only {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1188,6 +1238,7 @@ a:focus-visible {
   border-radius: 50%;
   font-size: 0.92rem;
   transition: all var(--transition-normal);
+  flex-shrink: 0;
 }
 
 .btn-icon-only:hover {
@@ -1199,6 +1250,7 @@ a:focus-visible {
   transform: scale(0.95);
 }
 
+/* Tooltip */
 .tooltip {
   position: relative;
 }
@@ -1212,7 +1264,7 @@ a:focus-visible {
   padding: 4px 8px;
   background: var(--primary-light);
   color: var(--text-primary);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   border-radius: var(--radius-sm);
   white-space: nowrap;
   opacity: 0;
@@ -1272,7 +1324,7 @@ a:focus-visible {
 
 .legend-hint {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   margin-top: 2px;
   color: var(--text-secondary);
 }
@@ -1302,6 +1354,7 @@ a:focus-visible {
   transform: translateY(-2px);
 }
 
+/* Card glow accents */
 .card-glow {
   position: absolute;
   top: -50%;
@@ -1327,6 +1380,7 @@ a:focus-visible {
   background: var(--accent-blue);
 }
 
+/* Card header */
 .card-header {
   display: flex;
   align-items: center;
@@ -1343,6 +1397,7 @@ a:focus-visible {
   justify-content: center;
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
+  flex-shrink: 0;
 }
 
 .card-icon {
@@ -1351,18 +1406,20 @@ a:focus-visible {
 
 .card-title {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   letter-spacing: 1px;
   flex: 1;
+  min-width: 0;
 }
 
 .card-badge {
   font-family: var(--font-display);
-  font-size: 0.56rem;
+  font-size: 0.52rem;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
 .card-badge.success {
@@ -1391,6 +1448,7 @@ a:focus-visible {
   }
 }
 
+/* ---- Fuel card ---- */
 .fuel-card {
   grid-column: span 2;
   border-color: rgba(255, 107, 53, 0.2);
@@ -1411,6 +1469,8 @@ a:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* FIX: target both class and ID so JS className changes work */
+#fuel-bar,
 .fuel-bar {
   height: 100%;
   background: var(--gradient-fuel);
@@ -1420,11 +1480,13 @@ a:focus-visible {
   box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
 }
 
+#fuel-bar.warning,
 .fuel-bar.warning {
   background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);
   box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
 }
 
+#fuel-bar.critical,
 .fuel-bar.critical {
   background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
@@ -1496,8 +1558,10 @@ a:focus-visible {
   color: var(--text-muted);
 }
 
+/* FIX: refuel button — hidden by default, JS toggles display */
+#refuel-btn,
 .btn-refuel {
-  display: none;
+  display: none; /* JS sets to "flex" when available */
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
@@ -1511,20 +1575,33 @@ a:focus-visible {
   background: var(--gradient-orange);
   border-radius: var(--radius-sm);
   transition: all var(--transition-normal);
-  min-height: 38px;
+  min-height: 40px;
+  cursor: pointer;
 }
 
-.btn-refuel:hover {
+#refuel-btn:hover:not(:disabled),
+.btn-refuel:hover:not(:disabled) {
   transform: scale(1.02);
   box-shadow: var(--shadow-glow-orange);
 }
 
+#refuel-btn:disabled,
 .btn-refuel:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
 
+.refuel-icon {
+  font-size: 1rem;
+}
+
+.refuel-text {
+  /* keep text on one line */
+  white-space: nowrap;
+}
+
+/* ---- Reputation card ---- */
 .reputation-card {
   border-color: rgba(168, 85, 247, 0.2);
 }
@@ -1552,6 +1629,8 @@ a:focus-visible {
   stroke-width: 8;
 }
 
+/* FIX: target the id the JS uses AND the class */
+#reputation-circle,
 .reputation-progress {
   fill: none;
   stroke: var(--accent-purple);
@@ -1572,6 +1651,7 @@ a:focus-visible {
   color: var(--accent-purple);
 }
 
+/* ---- Rescued card ---- */
 .rescued-card {
   border-color: rgba(0, 255, 136, 0.2);
 }
@@ -1590,7 +1670,7 @@ a:focus-visible {
 }
 
 .rescued-label {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1602,9 +1682,10 @@ a:focus-visible {
   flex-wrap: wrap;
   gap: 2px;
   margin-top: var(--space-sm);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
 }
 
+/* ---- Missions card ---- */
 .missions-card {
   border-color: rgba(0, 212, 255, 0.2);
 }
@@ -1632,6 +1713,8 @@ a:focus-visible {
   stroke-width: 8;
 }
 
+/* FIX: target both ID and class */
+#missions-circle,
 .missions-progress {
   fill: none;
   stroke: var(--accent-blue);
@@ -1649,6 +1732,8 @@ a:focus-visible {
   font-family: var(--font-display);
   font-size: var(--text-base);
   font-weight: 700;
+  /* FIX: prevent text wrapping inside ring */
+  white-space: nowrap;
 }
 
 #missions-completed {
@@ -1666,7 +1751,7 @@ a:focus-visible {
 
 .missions-label {
   text-align: center;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -1746,18 +1831,21 @@ a:focus-visible {
 
 .location-label {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--accent-blue);
   letter-spacing: 2px;
 }
 
-.location-info h2 {
+.location-info h2,
+#current-airport-name {
   font-family: var(--font-display);
   font-size: clamp(var(--text-base), 4vw, var(--text-xl));
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
   line-height: 1.3;
+  /* FIX: prevent overflow for long names */
+  word-break: break-word;
 }
 
 .airport-code-wrapper {
@@ -1768,6 +1856,7 @@ a:focus-visible {
   margin-bottom: var(--space-sm);
 }
 
+#current-airport-code,
 .airport-code {
   display: inline-block;
   font-family: var(--font-display);
@@ -1788,9 +1877,10 @@ a:focus-visible {
   display: flex;
   justify-content: center;
   gap: var(--space-sm);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   font-family: var(--font-display);
+  flex-wrap: wrap;
 }
 
 .coord-divider {
@@ -1803,16 +1893,9 @@ a:focus-visible {
 
 .map-section {
   margin-bottom: var(--space-xl);
-}
-
-/* extra left-right space around map section */
-.map-section .section-header,
-.map-section .section-subtitle,
-.map-section .map-wrapper,
-.map-section .map-legend {
-  width: calc(100% - 20px);
-  margin-left: auto;
-  margin-right: auto;
+  /* FIX: breathing room via padding instead of width calc */
+  padding-left: clamp(0px, 1vw, 10px);
+  padding-right: clamp(0px, 1vw, 10px);
 }
 
 .map-controls {
@@ -1821,8 +1904,10 @@ a:focus-visible {
 }
 
 .map-control-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1839,6 +1924,10 @@ a:focus-visible {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.map-control-btn:active {
+  transform: scale(0.93);
+}
+
 .map-wrapper {
   position: relative;
   border-radius: var(--radius-lg);
@@ -1846,6 +1935,8 @@ a:focus-visible {
   border: 2px solid rgba(0, 212, 255, 0.2);
 }
 
+/* FIX: target both ID (Leaflet needs it) and class */
+#game-map,
 .game-map {
   width: 100%;
   height: 250px;
@@ -1866,7 +1957,7 @@ a:focus-visible {
   padding: 4px 8px;
   background: rgba(10, 14, 23, 0.9);
   border-radius: var(--radius-sm);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--accent-orange);
   font-family: var(--font-display);
 }
@@ -1885,7 +1976,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-secondary);
 }
 
@@ -1916,6 +2007,7 @@ a:focus-visible {
   background: var(--text-muted);
 }
 
+/* ---- Map markers ---- */
 .custom-marker {
   display: flex;
   align-items: center;
@@ -1990,6 +2082,7 @@ a:focus-visible {
   }
 }
 
+/* ---- Leaflet popup overrides ---- */
 .leaflet-popup-content-wrapper {
   background: rgba(19, 27, 46, 0.95) !important;
   border: 1px solid rgba(0, 212, 255, 0.3) !important;
@@ -2008,6 +2101,11 @@ a:focus-visible {
   background: rgba(19, 27, 46, 0.95) !important;
 }
 
+/* FIX: ensure popup sits above fuel range circle */
+.leaflet-popup {
+  z-index: 450 !important;
+}
+
 .popup-content {
   text-align: center;
 }
@@ -2022,7 +2120,7 @@ a:focus-visible {
 
 .popup-code {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-dark);
   background: var(--accent-blue);
   padding: 2px 8px;
@@ -2042,7 +2140,7 @@ a:focus-visible {
   color: var(--accent-orange);
   padding: 4px 8px;
   border-radius: var(--radius-xs);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
   margin-bottom: 4px;
 }
@@ -2051,7 +2149,7 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
   margin-bottom: var(--space-sm);
   padding: 4px;
@@ -2060,7 +2158,7 @@ a:focus-visible {
 }
 
 .popup-status {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   padding: 4px;
   border-radius: var(--radius-xs);
   margin-bottom: var(--space-sm);
@@ -2081,21 +2179,23 @@ a:focus-visible {
   color: var(--success);
   padding: 4px 8px;
   border-radius: var(--radius-xs);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
 }
 
+/* FIX: min touch target for fly button */
 .btn-fly {
   width: 100%;
   padding: 8px;
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-dark);
   background: var(--gradient-blue);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
-  min-height: 32px;
+  min-height: 36px;
+  cursor: pointer;
 }
 
 .btn-fly:hover:not(:disabled) {
@@ -2110,7 +2210,7 @@ a:focus-visible {
 }
 
 /* ============================================
-   TRAVEL SECTION
+   TRAVEL / AIRPORTS SECTION
    ============================================ */
 
 .travel-section {
@@ -2124,7 +2224,7 @@ a:focus-visible {
 
 .filter-btn {
   padding: 5px 8px;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.05);
@@ -2141,6 +2241,8 @@ a:focus-visible {
   border-color: rgba(0, 212, 255, 0.3);
 }
 
+/* FIX: target both ID and class */
+#airports-grid,
 .airports-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -2150,20 +2252,7 @@ a:focus-visible {
   padding-right: var(--space-xs);
 }
 
-.airports-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.airports-grid::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: var(--radius-full);
-}
-
-.airports-grid::-webkit-scrollbar-thumb {
-  background: var(--primary-lighter);
-  border-radius: var(--radius-full);
-}
-
+/* Airport card */
 .airport-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -2174,6 +2263,8 @@ a:focus-visible {
   position: relative;
   overflow: hidden;
   animation: card-slide-in 0.3s ease backwards;
+  /* FIX: minimum touch target */
+  min-height: 44px;
 }
 
 @keyframes card-slide-in {
@@ -2203,8 +2294,10 @@ a:focus-visible {
   transform: scaleX(1);
 }
 
+/* FIX: active state for touch devices */
 .airport-card:active:not(.out-of-range) {
   transform: translateY(0);
+  background: rgba(0, 212, 255, 0.08);
 }
 
 .airport-card.has-mission {
@@ -2242,11 +2335,16 @@ a:focus-visible {
   color: var(--text-primary);
   line-height: 1.3;
   flex: 1;
+  min-width: 0;
+  /* FIX: truncate long names */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .airport-code-small {
   font-family: var(--font-display);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--accent-blue);
   background: rgba(0, 212, 255, 0.15);
   padding: 2px 6px;
@@ -2274,10 +2372,11 @@ a:focus-visible {
 
 .in-range-badge,
 .out-range-badge {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .in-range-badge {
@@ -2290,6 +2389,7 @@ a:focus-visible {
   color: var(--text-muted);
 }
 
+/* Mission indicator on airport cards */
 .mission-indicator {
   display: flex;
   flex-wrap: wrap;
@@ -2314,7 +2414,7 @@ a:focus-visible {
   display: flex;
   gap: var(--space-sm);
   width: 100%;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
 }
 
@@ -2331,6 +2431,7 @@ a:focus-visible {
   text-align: center;
   padding: var(--space-xl);
   color: var(--text-muted);
+  font-size: var(--text-sm);
 }
 
 .error-text {
@@ -2345,6 +2446,8 @@ a:focus-visible {
   margin-bottom: var(--space-xl);
 }
 
+/* FIX: target both ID and class */
+#missions-list,
 .missions-list {
   display: flex;
   flex-direction: column;
@@ -2416,6 +2519,7 @@ a:focus-visible {
   color: var(--text-muted);
 }
 
+/* Mission items */
 .mission-item {
   display: flex;
   align-items: center;
@@ -2426,6 +2530,11 @@ a:focus-visible {
   padding: var(--space-md);
   transition: all var(--transition-normal);
   animation: card-slide-in 0.3s ease backwards;
+  min-height: 44px;
+}
+
+.mission-item:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .mission-item .mission-icon {
@@ -2453,7 +2562,7 @@ a:focus-visible {
 }
 
 .mission-location {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
@@ -2461,11 +2570,12 @@ a:focus-visible {
   margin-bottom: 2px;
 }
 
-.mission-meta {
+.mission-item .mission-meta {
   display: flex;
   gap: var(--space-md);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
+  width: auto;
 }
 
 .mission-meta .people-count {
@@ -2490,10 +2600,11 @@ a:focus-visible {
 
 .status-text {
   font-family: var(--font-display);
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   letter-spacing: 1px;
 }
 
+/* Mission status variants */
 .mission-item.pending {
   border-left: 3px solid var(--accent-orange);
 }
@@ -2527,7 +2638,7 @@ a:focus-visible {
 }
 
 .difficulty-badge {
-  font-size: 0.58rem;
+  font-size: 0.52rem;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   font-weight: 600;
@@ -2615,7 +2726,9 @@ a:focus-visible {
   position: relative;
   width: 100%;
   max-width: 390px;
-  max-height: 90vh;
+  /* FIX: account for safe area and prevent overflow */
+  max-height: calc(90vh - var(--safe-top) - var(--safe-bottom));
+  max-height: calc(90dvh - var(--safe-top) - var(--safe-bottom));
   overflow-y: auto;
   border-radius: var(--radius-xl);
   animation: modal-slide-up 0.3s ease;
@@ -2632,6 +2745,7 @@ a:focus-visible {
   }
 }
 
+/* Modal header variants */
 .modal-header {
   display: flex;
   align-items: center;
@@ -2756,6 +2870,13 @@ a:focus-visible {
   padding-top: 0;
 }
 
+/* FIX: ensure primary button fills action area */
+.modal-actions .btn-primary {
+  flex: 1;
+  width: 100%;
+}
+
+/* ---- Mission modal specifics ---- */
 .disaster-info {
   text-align: center;
   margin-bottom: var(--space-md);
@@ -2836,7 +2957,7 @@ a:focus-visible {
 }
 
 .mission-stat .stat-label {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--text-muted);
 }
 
@@ -2875,6 +2996,8 @@ a:focus-visible {
   overflow: hidden;
 }
 
+/* FIX: target ID from JS */
+#success-chance,
 .chance-fill {
   height: 100%;
   background: var(--gradient-success);
@@ -2882,6 +3005,7 @@ a:focus-visible {
   transition: width 0.5s ease;
 }
 
+#chance-percent,
 .chance-value {
   font-family: var(--font-display);
   font-size: var(--text-xs);
@@ -2898,6 +3022,7 @@ a:focus-visible {
   color: var(--text-secondary);
 }
 
+/* Action buttons */
 .btn-success,
 .btn-danger {
   flex: 1;
@@ -2924,6 +3049,10 @@ a:focus-visible {
   box-shadow: var(--shadow-glow-green);
 }
 
+.btn-success:active {
+  transform: translateY(0);
+}
+
 .btn-danger {
   color: var(--text-primary);
   background: rgba(255, 51, 102, 0.2);
@@ -2935,6 +3064,11 @@ a:focus-visible {
   transform: translateY(-2px);
 }
 
+.btn-danger:active {
+  transform: translateY(0);
+}
+
+/* ---- Result modal ---- */
 .result-animation {
   text-align: center;
   margin-bottom: var(--space-md);
@@ -2965,7 +3099,10 @@ a:focus-visible {
   margin-bottom: var(--space-md);
 }
 
+/* Effects list (shared by result & event) */
+#result-effects,
 .result-effects,
+#event-effects,
 .event-effects {
   background: rgba(0, 0, 0, 0.3);
   border-radius: var(--radius-md);
@@ -2977,6 +3114,7 @@ a:focus-visible {
   justify-content: space-between;
   padding: 6px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: var(--text-xs);
 }
 
 .effect-item:last-child {
@@ -3004,8 +3142,10 @@ a:focus-visible {
   text-align: center;
   color: var(--text-muted);
   padding: var(--space-md);
+  font-size: var(--text-xs);
 }
 
+/* ---- Event modal ---- */
 #event-name {
   font-family: var(--font-display);
   text-align: center;
@@ -3019,8 +3159,10 @@ a:focus-visible {
   color: var(--text-secondary);
   margin-bottom: var(--space-md);
   line-height: 1.5;
+  font-size: var(--text-sm);
 }
 
+/* ---- Game Over modal ---- */
 .gameover-content {
   text-align: center;
 }
@@ -3061,6 +3203,7 @@ a:focus-visible {
   font-size: var(--text-sm);
   width: 20px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .stat-row span:nth-child(2) {
@@ -3080,16 +3223,20 @@ a:focus-visible {
   color: var(--accent-green);
 }
 
+/* ---- Victory modal ---- */
 .victory-content {
   text-align: center;
   overflow: hidden;
 }
 
+/* FIX: confetti must cover entire viewport, not just modal */
+#confetti,
 .confetti-container {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: calc(var(--z-modal) + 10);
 }
 
 .confetti-piece {
@@ -3102,7 +3249,7 @@ a:focus-visible {
 
 @keyframes confetti-fall {
   to {
-    transform: translateY(500px) rotate(720deg);
+    transform: translateY(100vh) rotate(720deg);
     opacity: 0;
   }
 }
@@ -3173,6 +3320,7 @@ a:focus-visible {
 .victory-subtitle {
   color: var(--text-secondary);
   margin-bottom: var(--space-md);
+  font-size: var(--text-sm);
 }
 
 .victory-badge {
@@ -3202,6 +3350,7 @@ a:focus-visible {
   letter-spacing: 1px;
 }
 
+/* ---- Help modal ---- */
 .help-content {
   max-width: 460px;
 }
@@ -3222,6 +3371,7 @@ a:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
+  min-height: 36px;
 }
 
 .help-tab.active,
@@ -3286,6 +3436,8 @@ a:focus-visible {
    FLYING OVERLAY
    ============================================ */
 
+/* FIX: target both ID and class */
+#flying-overlay,
 .flying-overlay {
   display: none;
   position: fixed;
@@ -3296,6 +3448,7 @@ a:focus-visible {
   justify-content: center;
 }
 
+#flying-overlay.active,
 .flying-overlay.active {
   display: flex;
 }
@@ -3329,7 +3482,6 @@ a:focus-visible {
 
 .cloud-fly.c1 {
   top: 10%;
-  animation-delay: 0s;
 }
 .cloud-fly.c2 {
   top: 40%;
@@ -3357,11 +3509,11 @@ a:focus-visible {
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2.4rem;
-  animation: plane-fly 1s ease-in-out infinite;
+  animation: plane-fly-anim 1s ease-in-out infinite;
   filter: drop-shadow(0 0 18px var(--accent-blue));
 }
 
-@keyframes plane-fly {
+@keyframes plane-fly-anim {
   0%,
   100% {
     transform: translate(-50%, -50%) rotate(-5deg);
@@ -3434,11 +3586,16 @@ a:focus-visible {
   margin: 0 auto var(--space-sm);
 }
 
+/* FIX: reset animation on each activation */
 .flying-bar {
   height: 100%;
   width: 0;
   background: var(--gradient-blue);
   border-radius: var(--radius-full);
+  animation: flying-progress 2.5s ease-in-out forwards;
+}
+
+#flying-overlay.active .flying-bar {
   animation: flying-progress 2.5s ease-in-out forwards;
 }
 
@@ -3455,9 +3612,10 @@ a:focus-visible {
 }
 
 /* ============================================
-   LOADING OVERLAY
+   LOADING OVERLAY  (in-game spinners)
    ============================================ */
 
+#loading-overlay,
 .loading-overlay {
   display: none;
   position: fixed;
@@ -3470,6 +3628,7 @@ a:focus-visible {
   gap: var(--space-md);
 }
 
+#loading-overlay.active,
 .loading-overlay.active {
   display: flex;
 }
@@ -3489,7 +3648,8 @@ a:focus-visible {
   }
 }
 
-.loading-overlay .loading-text {
+.loading-overlay .loading-text,
+#loading-overlay .loading-text {
   font-family: var(--font-display);
   color: var(--text-secondary);
   letter-spacing: 2px;
@@ -3500,9 +3660,11 @@ a:focus-visible {
    TOAST NOTIFICATIONS
    ============================================ */
 
+/* FIX: target both ID and class, centre on mobile */
+#toast-container,
 .toast-container {
   position: fixed;
-  top: var(--space-md);
+  top: calc(var(--space-md) + var(--safe-top));
   right: var(--space-md);
   left: var(--space-md);
   z-index: var(--z-toast);
@@ -3583,7 +3745,7 @@ a:focus-visible {
 }
 
 /* ============================================
-   RESPONSIVE - TABLET (768px+)
+   RESPONSIVE — TABLET  (768px +)
    ============================================ */
 
 @media (min-width: 768px) {
@@ -3607,6 +3769,7 @@ a:focus-visible {
     grid-column: span 2;
   }
 
+  #game-map,
   .game-map {
     height: 340px;
   }
@@ -3615,6 +3778,7 @@ a:focus-visible {
     grid-template-columns: repeat(4, 1fr);
   }
 
+  #airports-grid,
   .airports-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -3627,16 +3791,22 @@ a:focus-visible {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .map-section .section-header,
-  .map-section .section-subtitle,
-  .map-section .map-wrapper,
-  .map-section .map-legend {
-    width: calc(100% - 40px);
+  .map-section {
+    padding-left: clamp(10px, 2vw, 20px);
+    padding-right: clamp(10px, 2vw, 20px);
+  }
+
+  /* Toast right-aligned on tablet+ */
+  #toast-container,
+  .toast-container {
+    left: auto;
+    right: var(--space-lg);
+    align-items: flex-end;
   }
 }
 
 /* ============================================
-   RESPONSIVE - DESKTOP (1024px+)
+   RESPONSIVE — DESKTOP  (1024px +)
    ============================================ */
 
 @media (min-width: 1024px) {
@@ -3662,10 +3832,12 @@ a:focus-visible {
     height: 82px;
   }
 
+  #game-map,
   .game-map {
     height: 420px;
   }
 
+  #airports-grid,
   .airports-grid {
     grid-template-columns: repeat(3, 1fr);
     max-height: 420px;
@@ -3675,87 +3847,89 @@ a:focus-visible {
     gap: var(--space-2xl);
   }
 
-  .map-section .section-header,
-  .map-section .section-subtitle,
-  .map-section .map-wrapper,
-  .map-section .map-legend {
-    width: calc(100% - 80px);
+  .map-section {
+    padding-left: clamp(20px, 3vw, 40px);
+    padding-right: clamp(20px, 3vw, 40px);
   }
 }
 
 /* ============================================
-   RESPONSIVE - LARGE DESKTOP (1280px+)
+   RESPONSIVE — LARGE DESKTOP  (1280px +)
    ============================================ */
 
 @media (min-width: 1280px) {
+  #airports-grid,
   .airports-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 
+  #game-map,
   .game-map {
     height: 470px;
   }
 
-  .map-section .section-header,
-  .map-section .section-subtitle,
-  .map-section .map-wrapper,
-  .map-section .map-legend {
-    width: calc(100% - 120px);
+  .map-section {
+    padding-left: clamp(40px, 4vw, 60px);
+    padding-right: clamp(40px, 4vw, 60px);
   }
 }
 
 /* ============================================
-   RESPONSIVE - SMALL MOBILE (max 380px)
+   RESPONSIVE — SMALL MOBILE  (≤ 380px)
    ============================================ */
 
 @media (max-width: 380px) {
+  html {
+    font-size: 14px;
+  }
+
   .welcome-container {
-    gap: 8px;
-  }
-
-  .game-title {
-    font-size: 1.55rem;
-  }
-
-  .game-subtitle {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
     gap: 6px;
   }
 
+  .game-title {
+    font-size: 1.4rem;
+  }
+
+  .game-subtitle {
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    gap: 4px;
+  }
+
   .subtitle-line {
-    width: 16px;
+    width: 14px;
   }
 
   .plane-icon {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
 
   .story-box,
   .name-input-container,
   .instructions {
-    padding: 10px;
+    padding: 8px;
   }
 
   .story-box p {
-    font-size: 0.72rem;
-    line-height: 1.35;
-  }
-
-  .instructions li {
     font-size: 0.68rem;
     line-height: 1.3;
   }
 
+  .instructions li {
+    font-size: 0.64rem;
+    line-height: 1.25;
+  }
+
   .stats-preview {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 6px;
   }
 
   .stat-item {
     flex-direction: row;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 8px;
     text-align: left;
   }
 
@@ -3785,11 +3959,9 @@ a:focus-visible {
     width: 100%;
   }
 
-  .map-section .section-header,
-  .map-section .section-subtitle,
-  .map-section .map-wrapper,
-  .map-section .map-legend {
-    width: calc(100% - 12px);
+  .map-section {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
   }
 }
 
@@ -3798,51 +3970,50 @@ a:focus-visible {
    ============================================ */
 
 @media (max-height: 500px) and (orientation: landscape) {
-  body.welcome-active {
-    overflow: hidden;
-  }
-
   #welcome-screen {
-    padding-top: calc(6px + var(--safe-top));
-    padding-bottom: calc(6px + var(--safe-bottom));
+    padding-top: calc(4px + var(--safe-top));
+    padding-bottom: calc(4px + var(--safe-bottom));
+    /* FIX: allow horizontal scroll in landscape on very short screens */
+    overflow-y: auto;
   }
 
   .welcome-container {
-    max-width: 92%;
-    gap: 6px;
-    max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 12px);
+    max-width: 94%;
+    gap: 4px;
+    max-height: none;
+    /* FIX: let container grow naturally in landscape */
   }
 
   .plane-icon {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .game-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 
   .game-subtitle {
-    font-size: 0.58rem;
+    font-size: 0.52rem;
   }
 
   .story-box,
   .name-input-container,
   .instructions {
-    padding: 8px;
+    padding: 6px;
   }
 
   .story-box p,
   .instructions li {
-    font-size: 0.66rem;
-    line-height: 1.22;
+    font-size: 0.62rem;
+    line-height: 1.2;
   }
 
   .stats-preview {
-    margin-top: 6px;
+    margin-top: 4px;
   }
 
   .stat-item {
-    padding: 6px;
+    padding: 5px;
   }
 
   .version-info {
@@ -3851,20 +4022,27 @@ a:focus-visible {
 
   .modal-content {
     max-height: 95vh;
+    max-height: 95dvh;
   }
 }
 
 /* ============================================
-   PRINT STYLES
+   PRINT
    ============================================ */
 
 @media print {
   .animated-bg,
+  #particles,
   .particle-container,
+  #loading-screen,
   .loading-screen,
+  #flying-overlay,
   .flying-overlay,
   .modal,
-  .toast-container {
+  #toast-container,
+  .toast-container,
+  #loading-overlay,
+  .loading-overlay {
     display: none !important;
   }
 
@@ -3885,6 +4063,7 @@ a:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 
   .particle,
@@ -3894,58 +4073,18 @@ a:focus-visible {
   .stars2,
   .stars3 {
     animation: none !important;
+    display: none;
   }
 }
 
 /* ============================================
-   DARK MODE SUPPORT
+   FORCE DARK COLOR SCHEME
    ============================================ */
 
 @media (prefers-color-scheme: light) {
   :root {
     color-scheme: dark;
   }
-}
-
-/* ============================================
-   SCROLLBAR STYLING
-   ============================================ */
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary-lighter) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--primary-lighter);
-  border-radius: var(--radius-full);
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-light);
-}
-
-/* ============================================
-   SELECTION STYLING
-   ============================================ */
-
-::selection {
-  background: rgba(0, 212, 255, 0.3);
-  color: var(--text-primary);
-}
-
-::-moz-selection {
-  background: rgba(0, 212, 255, 0.3);
-  color: var(--text-primary);
 }
 
 /* ============================================
@@ -4005,5 +4144,5 @@ a:focus-visible {
 }
 
 /* ============================================
-   END OF STYLES
+   END OF STYLES v2.3
    ============================================ */
